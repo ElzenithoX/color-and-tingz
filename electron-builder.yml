@@ -1,0 +1,36 @@
+# Windows installer: npm run dist  →  release/<version>/color-and-tingz-Setup-<version>.exe
+appId: com.elzenitho.color-and-tingz
+# Display name, shown in the installer, Start menu and Apps list.
+productName: color&tingz
+# File-system name: the install folder, exe and uninstaller use this, so no "&" ends up in paths.
+executableName: color-and-tingz
+copyright: Copyright © 2026 Elzenitho
+
+directories:
+  output: release/${version}
+  buildResources: build
+
+files:
+  - dist/**
+  - dist-electron/**
+  - package.json
+
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+  icon: build/icon.ico
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: color&tingz
+  uninstallDisplayName: color&tingz
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico
+  artifactName: color-and-tingz-Setup-${version}.${ext}
+  # Keep saved colours when uninstalling.
+  deleteAppDataOnUninstall: false

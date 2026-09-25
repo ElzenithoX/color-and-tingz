@@ -1,0 +1,7 @@
+node_modules/
+dist/
+dist-electron/
+release/
+
+# Design reference image (third-party Dribbble shot), kept locally only.
+reference.png
