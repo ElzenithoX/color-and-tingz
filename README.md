@@ -2,6 +2,20 @@
 
 An offline colour toolkit for Windows, made by Elzenitho. The Design Bender.
 
+## Download
+
+**[⬇ Download the latest version](https://github.com/ElzenithoX/color-and-tingz/releases/latest)**
+
+1. Under **Assets**, download `color-and-tingz-<version>-windows.zip`. The "Source code" links are the code, not the app.
+2. Right-click the zip and choose **Extract All**.
+3. Double-click `color-and-tingz-Setup-<version>.exe` and follow the installer.
+4. Windows may say "Windows protected your PC", because the app isn't code-signed yet. Click **More info**, then **Run anyway**.
+5. Open **color&tingz** from the Start menu or the desktop shortcut. It works fully offline.
+
+Requires Windows 10 or 11 (64-bit).
+
+## Features
+
 - **Converter**: type HEX, RGB, HSL, CMYK or a Pantone code. You get the nearest colour name, every format, harmonies, tints and shades, and WCAG contrast.
 - **Image Palette**: drop in an image to get its 6–10 dominant colours, then export them as PNG, CSS or JSON.
 - **Gradient Creator**: linear or radial gradients in OKLCH or sRGB, with CSS output, stepped swatches and PNG export.
