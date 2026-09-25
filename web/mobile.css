@@ -1,0 +1,327 @@
+/*
+ * Web app only (loaded by web/main.ts, never by the Windows app).
+ * Phones: logo and credit on top, the sidebar becomes a bottom tab bar,
+ * and every grid stacks into one column.
+ */
+
+/* ---------- Touch screens (phones and tablets) ---------- */
+
+@media (hover: none) {
+  /* Things that only appear on hover on desktop are always visible. */
+  .palette-card-codes .icon-btn,
+  .saved-color-swatch span,
+  .saved-palette-name svg,
+  .dropzone-caption {
+    opacity: 1;
+  }
+
+  .harmony-swatch:hover,
+  .step-swatch:hover,
+  .dark-btn:hover,
+  .light-btn:hover:not(:disabled) {
+    transform: none;
+  }
+
+  .ramp-step:hover,
+  .saved-palette-strip button:hover {
+    flex: 1;
+  }
+
+  .ramp-step.is-base:hover {
+    flex: 1.6;
+  }
+
+  /* "Drop an image here / click to browse" doesn't fit a phone. */
+  .dropzone-empty strong,
+  .dropzone-empty span:last-child {
+    font-size: 0;
+  }
+
+  .dropzone-empty strong::after {
+    content: 'Tap to choose an image';
+    font-size: 18px;
+  }
+
+  .dropzone-empty span:last-child::after {
+    content: 'From Photos or Files';
+    font-size: 13px;
+  }
+}
+
+/* ---------- Phones ---------- */
+
+@media (max-width: 760px) {
+  html,
+  body,
+  #root {
+    height: 100dvh;
+  }
+
+  .frame {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    height: 100dvh;
+    padding: 0;
+  }
+
+  /* Top bar: logo on the left (positioned below), credit on the right. */
+  .titlebar {
+    grid-row: 1;
+    height: calc(58px + env(safe-area-inset-top));
+    padding: env(safe-area-inset-top) 16px 0 88px;
+  }
+
+  .credit {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    white-space: normal;
+    text-align: right;
+    line-height: 1.35;
+  }
+
+  .sidebar-logo {
+    position: fixed;
+    top: calc(env(safe-area-inset-top) + 8px);
+    left: 14px;
+    width: 58px;
+    height: 42px;
+    padding: 6px;
+    border-radius: 13px;
+    z-index: 20;
+  }
+
+  /* Sidebar → bottom tab bar. */
+  .sidebar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    gap: 0;
+    height: calc(64px + env(safe-area-inset-bottom));
+    padding: 0 8px env(safe-area-inset-bottom);
+    background: var(--frame);
+  }
+
+  .sidebar-nav {
+    display: contents;
+  }
+
+  .sidebar-btn {
+    width: 52px;
+    height: 48px;
+  }
+
+  .sidebar-btn[aria-current='page']::before {
+    left: 14px;
+    right: 14px;
+    top: auto;
+    bottom: 2px;
+    width: auto;
+    height: 3px;
+    border-radius: 3px;
+  }
+
+  .panel {
+    grid-row: 2;
+    margin: 0 6px calc(64px + env(safe-area-inset-bottom));
+    border-radius: 24px;
+    scrollbar-gutter: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .panel::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Screens */
+
+  .screen {
+    padding: 22px 16px 32px;
+    gap: 24px;
+  }
+
+  h1 {
+    font-size: 26px;
+  }
+
+  .section-title {
+    font-size: 17px;
+    margin-bottom: 12px;
+  }
+
+  .screen-header {
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .header-actions {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .header-actions > * {
+    flex: 1 1 auto;
+  }
+
+  .count-picker {
+    justify-content: space-between;
+  }
+
+  .grid-top,
+  .grid-bottom,
+  .grid-palette,
+  .grid-gradient,
+  .saved-palettes {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  .harmony-grid,
+  .swatch-grid,
+  .saved-colors {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .card {
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  /* Converter */
+
+  .color-input {
+    width: 100%;
+  }
+
+  .color-input input,
+  .rgb-field input,
+  .color-field input {
+    font-size: 16px; /* 16px or more stops iOS zooming in on focus */
+  }
+
+  .swatch-card {
+    min-height: 230px;
+    padding: 20px 22px 22px;
+  }
+
+  .swatch-name {
+    font-size: 28px;
+  }
+
+  .swatch-hex {
+    font-size: 17px;
+  }
+
+  .values-card {
+    padding: 6px 10px 6px 12px;
+  }
+
+  .value-text {
+    font-size: 14px;
+  }
+
+  .harmony-card {
+    padding: 14px 14px 12px;
+    gap: 10px;
+  }
+
+  .harmony-swatches {
+    height: 52px;
+  }
+
+  .harmony-hexes {
+    font-size: 9px;
+  }
+
+  .ramp,
+  .steps-strip {
+    min-height: 110px;
+  }
+
+  /* Eleven steps are too narrow for labels; keep only the base colour's. */
+  .ramp-step:not(.is-base) span {
+    display: none;
+  }
+
+  .contrast-sample {
+    width: 56px;
+    height: 56px;
+  }
+
+  /* Image Palette */
+
+  .dropzone {
+    min-height: 240px;
+  }
+
+  .dropzone img {
+    max-height: 320px;
+  }
+
+  .palette-strip {
+    height: 110px;
+  }
+
+  /* One colour per row: swatch on the left, name and codes on the right. */
+  .swatch-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .palette-card {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    column-gap: 12px;
+    row-gap: 2px;
+  }
+
+  .palette-card-swatch {
+    grid-row: 1 / 3;
+    height: auto;
+    min-height: 130px;
+  }
+
+  .palette-card-name {
+    padding: 6px 6px 0;
+  }
+
+  .palette-card-codes li {
+    height: 28px;
+  }
+
+  /* Gradient Creator */
+
+  .mode-toggle-lg button {
+    padding: 0 12px;
+  }
+
+  .gradient-preview {
+    min-height: 240px;
+  }
+
+  .step-swatch {
+    font-size: 9px;
+    padding-bottom: 8px;
+  }
+
+  .export-row .light-btn {
+    padding: 0 10px;
+  }
+
+  /* Saved */
+
+  .saved-color-swatch {
+    height: 80px;
+  }
+
+  .toast {
+    bottom: calc(76px + env(safe-area-inset-bottom));
+    max-width: calc(100% - 32px);
+  }
+}

@@ -5,3 +5,4 @@ release/
 
 # Design reference image (third-party Dribbble shot), kept locally only.
 reference.png
+dist-web/

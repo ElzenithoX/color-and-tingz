@@ -9,7 +9,9 @@
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "vite",
+    "dev:web": "vite --mode web --open /web.html",
     "build": "tsc --noEmit && vite build",
+    "build:web": "vite build --mode web",
     "test": "vitest run",
     "test:watch": "vitest",
     "dist": "npm run build && electron-builder --win nsis"

@@ -1,0 +1,23 @@
+<!doctype html>
+<!-- Entry for the web app (npm run build:web → dist-web/index.html). The Windows app uses index.html. -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:" />
+    <meta name="description" content="Offline colour toolkit: converter, image palettes, gradients. Made by Elzenitho, The Design Bender." />
+    <meta name="theme-color" content="#161618" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="color&amp;tingz" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" href="./icons/icon-192.png" />
+    <title>color&amp;tingz</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/web/main.ts"></script>
+  </body>
+</html>

@@ -14,6 +14,14 @@ An offline colour toolkit for Windows, made by Elzenitho. The Design Bender.
 
 Requires Windows 10 or 11 (64-bit).
 
+### iPhone, iPad, Android and Mac: use the web app
+
+**[Open color&tingz on the web](https://elzenithox.github.io/color-and-tingz/)**
+
+To install it on an iPhone or iPad, open the link in **Safari**, tap **Share**, then **Add to Home Screen**. It then opens full-screen like an app and works offline. On Android, open it in Chrome and choose **Install app**.
+
+In the web app, saved colours stay in that browser on that device. Exports open the share sheet, so you can save images to Photos or files to Files.
+
 ## Features
 
 - **Converter**: type HEX, RGB, HSL, CMYK or a Pantone code. You get the nearest colour name, every format, harmonies, tints and shades, and WCAG contrast.
@@ -31,7 +39,10 @@ In Windows PowerShell, type `npm.cmd` instead of `npm`. Script execution is bloc
 | `npm.cmd run dev` | Run the app with live reload |
 | `npm.cmd test` | Run the unit tests |
 | `npm.cmd run dist` | Build the installer into `release\<version>\color-and-tingz-Setup-<version>.exe` |
-| `npx.cmd vite --mode web` | Run just the interface in a browser, without Electron |
+| `npm.cmd run dev:web` | Run the web app with live reload (opens `/web.html`) |
+| `npm.cmd run build:web` | Build the web app into `dist-web\` |
+
+Every push to `master` rebuilds the web app and publishes it to GitHub Pages (`.github/workflows/web.yml`). The web-only files (`web.html` and the `web/` folder, which holds the phone layout, offline support and icons) are never part of the Windows app.
 
 ## Customising
 
