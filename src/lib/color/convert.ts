@@ -8,6 +8,7 @@ export type Cmyk = [c: number, m: number, y: number, k: number];
 const toRgb = converter('rgb');
 const toHsl = converter('hsl');
 const toLab65 = converter('lab65');
+const toOklch = converter('oklch');
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 const round = (v: number, digits = 0) => {
@@ -71,6 +72,15 @@ export function hexToLab(hex: string): Lab {
   return { l: c.l, a: c.a, b: c.b };
 }
 
+/**
+ * OKLCH as CSS writes it: lightness 0–100 (%), chroma 0–~0.37, hue in degrees.
+ * Greys have no hue; they get 0.
+ */
+export function hexToOklch(hex: string): [l: number, c: number, h: number] {
+  const c = toOklch(hex)!;
+  return [c.l * 100, c.c, c.h ?? 0];
+}
+
 /** Parse any CSS colour string with culori and return "#RRGGBB" (gamut-clipped), or null. */
 export function cssToHex(input: string): string | null {
   const c = parse(input);
@@ -92,6 +102,7 @@ export interface ColorValues {
   hsl: Hsl;
   cmyk: Cmyk;
   lab: [l: number, a: number, b: number];
+  oklch: [l: number, c: number, h: number];
 }
 
 /** All display values for a colour, rounded for presentation. */
@@ -102,12 +113,18 @@ export function describe(hex: string): ColorValues {
   const [hh, s, l] = hexToHsl(h);
   const cmyk = rgbToCmyk(rgb);
   const lab = hexToLab(h);
+  const [ol, oc, oh] = hexToOklch(h);
+  // This precision is the least that converts back to the exact same hex for
+  // every 8-bit colour, so a copied OKLCH value reproduces the colour.
+  const chroma = round(oc, 5);
   return {
     hex: h,
     rgb,
     hsl: [round(hh) % 360, round(s), round(l)],
     cmyk: [round(cmyk[0]), round(cmyk[1]), round(cmyk[2]), round(cmyk[3])],
     lab: [round(lab.l, 2), round(lab.a, 2), round(lab.b, 2)],
+    // Near-zero chroma means a grey, whose hue is meaningless: show 0.
+    oklch: [round(ol, 2), chroma, chroma === 0 ? 0 : round(oh, 2) % 360],
   };
 }
 
@@ -116,6 +133,7 @@ export const format = {
   hsl: ([h, s, l]: Hsl) => `hsl(${h}, ${s}%, ${l}%)`,
   cmyk: ([c, m, y, k]: Cmyk) => `cmyk(${c}%, ${m}%, ${y}%, ${k}%)`,
   lab: ([l, a, b]: [number, number, number]) => `lab(${l} ${a} ${b})`,
+  oklch: ([l, c, h]: [number, number, number]) => `oklch(${l}% ${c} ${h})`,
 };
 
 /**
@@ -134,6 +152,7 @@ export function formatValueList(
     `HSL: ${format.hsl(v.hsl)}`,
     `CMYK: ${format.cmyk(v.cmyk)}`,
     `LAB: ${format.lab(v.lab)}`,
+    `OKLCH: ${format.oklch(v.oklch)}`,
   ];
   if (pantone) lines.push(`Pantone: PANTONE ${pantone.code} (approximate, ΔE ${pantone.deltaE.toFixed(1)})`);
   return lines.join('\n');

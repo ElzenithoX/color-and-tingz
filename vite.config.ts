@@ -1,7 +1,7 @@
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import electron from 'vite-plugin-electron/simple';
-import webApp from './web/vite-plugin-web';
+import webApp from './web/vite-plugin-web.ts';
 
 export default defineConfig(async ({ mode }) => {
   // `--mode web` builds the web app (web.html → dist-web) without Electron.

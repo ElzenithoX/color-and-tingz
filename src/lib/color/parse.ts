@@ -1,7 +1,7 @@
 import { cmykToRgb, cssToHex, hslToHex, normalizeHex, rgbToHex } from './convert';
 import type { PantoneEntry } from './pantone';
 
-export type InputFormat = 'hex' | 'rgb' | 'hsl' | 'cmyk' | 'pantone' | 'css';
+export type InputFormat = 'hex' | 'rgb' | 'hsl' | 'cmyk' | 'oklch' | 'pantone' | 'css';
 
 export interface ParsedColor {
   hex: string;
@@ -94,6 +94,7 @@ export function parseColorInput(input: string, findPantone?: PantoneLookup): Par
     if (!css) return null;
     if (name === 'rgb' || name === 'rgba') return { hex: css, format: 'rgb' };
     if (name === 'hsl' || name === 'hsla') return { hex: css, format: 'hsl' };
+    if (name === 'oklch') return { hex: css, format: 'oklch' };
     return { hex: css, format: 'css' };
   }
 

@@ -97,6 +97,36 @@ describe('describe', () => {
   });
 });
 
+describe('OKLCH', () => {
+  it('matches known values', () => {
+    expect(describeColor('#07959D').oklch).toEqual([61, 0.10272, 201.59]);
+    expect(describeColor('#FFFFFF').oklch).toEqual([100, 0, 0]);
+    expect(describeColor('#000000').oklch).toEqual([0, 0, 0]);
+    const [l, c, h] = describeColor('#FF0000').oklch;
+    expect(l).toBeCloseTo(62.8, 1);
+    expect(c).toBeCloseTo(0.2577, 4);
+    expect(h).toBeCloseTo(29.2, 0);
+  });
+
+  it('gives greys hue 0 and never prints negative zero', () => {
+    for (const grey of ['#808080', '#F5F5F5', '#1A1A1A']) {
+      const [, c, h] = describeColor(grey).oklch;
+      expect(c).toBe(0);
+      expect(Object.is(h, 0)).toBe(true);
+    }
+  });
+
+  it('formats as CSS that converts back to exactly the same colour', () => {
+    expect(format.oklch(describeColor('#07959D').oklch)).toBe('oklch(61% 0.10272 201.59)');
+    // Spread across the whole sRGB cube, including greys and the corners.
+    for (let i = 0; i < 0x1000000; i += 0x7ff7) {
+      const hex = `#${i.toString(16).padStart(6, '0').toUpperCase()}`;
+      expect(cssToHex(format.oklch(describeColor(hex).oklch)), hex).toBe(hex);
+    }
+    expect(cssToHex(format.oklch(describeColor('#FFFFFF').oklch))).toBe('#FFFFFF');
+  });
+});
+
 describe('formatValueList', () => {
   it('lists every value on its own line', () => {
     const text = formatValueList(describeColor('#07959D'), { code: '320 C', deltaE: 2.44 }, 'Peacock Feather');
@@ -107,6 +137,7 @@ describe('formatValueList', () => {
       'HSL: hsl(183, 91%, 32%)',
       'CMYK: cmyk(96%, 5%, 0%, 38%)',
       expect.stringMatching(/^LAB: lab\(56\.\d+ -29\.\d+ -13\.\d+\)$/),
+      'OKLCH: oklch(61% 0.10272 201.59)',
       'Pantone: PANTONE 320 C (approximate, ΔE 2.4)',
     ]);
   });

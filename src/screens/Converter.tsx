@@ -16,6 +16,7 @@ const FORMAT_LABEL: Record<InputFormat, string> = {
   rgb: 'RGB',
   hsl: 'HSL',
   cmyk: 'CMYK',
+  oklch: 'OKLCH',
   pantone: 'Pantone',
   css: 'CSS',
 };
@@ -113,6 +114,11 @@ export default function Converter({ request }: { request?: ConverterRequest | nu
     { label: 'HSL', value: `${values.hsl[0]}°, ${values.hsl[1]}%, ${values.hsl[2]}%`, copy: format.hsl(values.hsl) },
     { label: 'CMYK', value: values.cmyk.join(', '), copy: format.cmyk(values.cmyk) },
     { label: 'LAB', value: values.lab.map((n) => n.toFixed(2)).join(', '), copy: format.lab(values.lab) },
+    {
+      label: 'OKLCH',
+      value: `${values.oklch[0]}%, ${values.oklch[1]}, ${values.oklch[2]}°`,
+      copy: format.oklch(values.oklch),
+    },
   ];
 
   return (

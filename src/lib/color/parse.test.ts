@@ -29,6 +29,12 @@ describe('parseColorInput', () => {
     expect(parse('240deg 100 50')).toEqual({ hex: '#0000FF', format: 'hsl' });
   });
 
+  it('detects OKLCH', () => {
+    expect(parse('oklch(61% 0.10272 201.59)')).toEqual({ hex: '#07959D', format: 'oklch' });
+    expect(parse('oklch(0.628 0.2577 29.23)')).toEqual({ hex: '#FF0000', format: 'oklch' });
+    expect(parse('oklch(nonsense)')).toBeNull();
+  });
+
   it('detects CMYK', () => {
     expect(parse('96,5,0,38')).toEqual({ hex: '#06969E', format: 'cmyk' });
     expect(parse('96%, 5%, 0%, 38%')?.format).toBe('cmyk');
@@ -57,7 +63,7 @@ describe('parseColorInput', () => {
 
   it('falls back to any CSS colour', () => {
     expect(parse('teal')).toEqual({ hex: '#008080', format: 'css' });
-    expect(parse('oklch(62.8% 0.2577 29.23)')?.format).toBe('css');
+    expect(parse('lab(56 -29 -13)')?.format).toBe('css');
   });
 
   it('rejects nonsense and out-of-range values', () => {
