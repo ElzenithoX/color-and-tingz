@@ -195,8 +195,31 @@
 
   /* Converter */
 
+  /* Dot and HEX/RGB/PANTONE toggle on the first row, the field(s) on the second. */
   .color-input {
     width: 100%;
+    height: auto;
+    flex-wrap: wrap;
+    row-gap: 8px;
+    padding: 8px 10px;
+    border-radius: 24px;
+  }
+
+  .color-input > .color-input-text,
+  .color-input > .rgb-fields,
+  .color-input > .pantone-field {
+    order: 3;
+    flex: 1 1 100%;
+  }
+
+  .color-input > .color-input-text,
+  .pantone-field .color-input-text {
+    height: 40px;
+    padding: 0 6px;
+  }
+
+  .color-input .chip {
+    margin-left: auto;
   }
 
   .color-input input,

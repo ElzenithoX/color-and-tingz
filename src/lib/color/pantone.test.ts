@@ -42,6 +42,35 @@ describe('createPantoneIndex', () => {
   });
 });
 
+describe('search', () => {
+  const index = createPantoneIndex([
+    { code: '320 C', hex: '#009CA6' },
+    { code: '3205 C', hex: '#00B2A9' },
+    { code: '1320 C', hex: '#123456' },
+    { code: 'Reflex Blue C', hex: '#001489' },
+    { code: 'Process Blue C', hex: '#0085CA' },
+    { code: 'Blue 072 C', hex: '#10069F' },
+  ]);
+  const codes = (q: string, limit?: number) => index.search(q, limit).map((e) => e.code);
+
+  it('ranks exact, then prefix, then word, then substring matches', () => {
+    expect(codes('320')).toEqual(['320 C', '3205 C', '1320 C']);
+    expect(codes('320 c')).toEqual(['320 C', '1320 C']);
+    expect(codes('320C')).toEqual(['320 C', '1320 C']);
+    expect(codes('Pantone 320')).toEqual(['320 C', '3205 C', '1320 C']);
+    expect(codes('blue')).toEqual(['Blue 072 C', 'Reflex Blue C', 'Process Blue C']);
+    expect(codes('flex')).toEqual(['Reflex Blue C']);
+  });
+
+  it('limits results and ignores empty queries', () => {
+    expect(codes('C', 2)).toHaveLength(2);
+    expect(codes('')).toEqual([]);
+    expect(codes('   ')).toEqual([]);
+    expect(codes('pantone')).toEqual([]);
+    expect(codes('zzz')).toEqual([]);
+  });
+});
+
 describe('bundled pantone.json', () => {
   it('is well formed, with unique codes', () => {
     expect(pantoneData.length).toBeGreaterThan(50);

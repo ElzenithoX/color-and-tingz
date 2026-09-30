@@ -1,6 +1,7 @@
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { Bookmark, BookmarkCheck, BookmarkPlus, CircleAlert } from 'lucide-react';
 import CopyButton from '../components/CopyButton';
+import PantoneField from '../components/PantoneField';
 import { describe, format, formatValueList, hexToRgb, rgbToHex } from '../lib/color/convert';
 import { parseColorInput, type InputFormat } from '../lib/color/parse';
 import { HARMONY_LABELS, harmony, shades, tints, type HarmonyKind } from '../lib/color/harmony';
@@ -29,7 +30,9 @@ const HARMONY_TINT: Record<HarmonyKind, string> = {
   tetradic: 'peach',
 };
 
-type InputMode = 'hex' | 'rgb';
+type InputMode = 'hex' | 'rgb' | 'pantone';
+
+const MODE_LABEL: Record<InputMode, string> = { hex: 'HEX', rgb: 'RGB', pantone: 'PANTONE' };
 type RgbFields = [string, string, string];
 
 const rgbFields = (hex: string): RgbFields => hexToRgb(hex).map(String) as RgbFields;
@@ -52,12 +55,15 @@ export default function Converter({ request }: { request?: ConverterRequest | nu
   const [mode, setMode] = useState<InputMode>('hex');
   const [text, setText] = useState(DEFAULT);
   const [rgb, setRgb] = useState<RgbFields>(() => rgbFields(DEFAULT));
+  const [pantoneText, setPantoneText] = useState('');
   const [current, setCurrent] = useState(() => parseColorInput(DEFAULT)!);
   const headerRef = useRef<HTMLElement>(null);
   const invalid =
     mode === 'hex'
       ? text.trim() !== '' && parseColorInput(text, pantoneIndex().find) === null
-      : rgb.some((c) => channel(c) === null);
+      : mode === 'rgb'
+        ? rgb.some((c) => channel(c) === null)
+        : pantoneText.trim() !== '' && pantoneIndex().search(pantoneText, 1).length === 0;
 
   const onType = (value: string) => {
     setText(value);
@@ -80,13 +86,19 @@ export default function Converter({ request }: { request?: ConverterRequest | nu
     if (m === mode) return;
     setMode(m);
     if (m === 'rgb') setRgb(rgbFields(current.hex));
-    else setText(current.hex);
+    else if (m === 'hex') {
+      setText(current.hex);
+      setCurrent((c) => ({ hex: c.hex, format: 'hex' }));
+    }
+    // Pantone: show the code if the colour came from one, otherwise start a fresh search.
+    else setPantoneText(current.format === 'pantone' && current.pantone ? current.pantone.code : '');
   };
 
   const load = (hex: string) => {
     setText(hex);
     setRgb(rgbFields(hex));
-    setCurrent({ hex, format: mode });
+    setPantoneText('');
+    setCurrent({ hex, format: mode === 'pantone' ? 'hex' : mode });
     headerRef.current?.closest('.panel')?.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -128,9 +140,9 @@ export default function Converter({ request }: { request?: ConverterRequest | nu
         <div className={`color-input${invalid ? ' is-invalid' : ''}`}>
           <span className="color-input-dot" style={{ background: current.hex }} />
           <div className="mode-toggle" role="radiogroup" aria-label="Input format">
-            {(['hex', 'rgb'] as const).map((m) => (
+            {(['hex', 'rgb', 'pantone'] as const).map((m) => (
               <button key={m} role="radio" aria-checked={mode === m} onClick={() => switchMode(m)}>
-                {m.toUpperCase()}
+                {MODE_LABEL[m]}
               </button>
             ))}
           </div>
@@ -144,6 +156,12 @@ export default function Converter({ request }: { request?: ConverterRequest | nu
               spellCheck={false}
               aria-label="Colour value"
               placeholder="#07959D, or 320 C, 96,5,0,38…"
+            />
+          ) : mode === 'pantone' ? (
+            <PantoneField
+              value={pantoneText}
+              onChange={setPantoneText}
+              onPick={(entry) => setCurrent({ hex: entry.hex.toUpperCase(), format: 'pantone', pantone: entry })}
             />
           ) : (
             <div className="rgb-fields">
@@ -171,7 +189,7 @@ export default function Converter({ request }: { request?: ConverterRequest | nu
 
           {invalid ? (
             <span className="chip chip-error">
-              <CircleAlert size={14} /> {mode === 'rgb' ? '0–255 only' : 'Not recognised'}
+              <CircleAlert size={14} /> {mode === 'rgb' ? '0–255 only' : mode === 'pantone' ? 'No match' : 'Not recognised'}
             </span>
           ) : (
             mode === 'hex' &&

@@ -32,13 +32,28 @@ export interface PantoneIndex {
   find(code: string): PantoneEntry | null;
   /** Nearest Pantone by CIEDE2000 in L*a*b* (D65). */
   nearest(hex: string): PantoneMatch | null;
+  /**
+   * Codes matching what the user has typed so far, best first: exact code,
+   * then codes starting with it, then codes with a word starting with it
+   * ("blue" → "Reflex Blue C"), then codes containing it. Spaces and a
+   * "Pantone" prefix are ignored, so "320c" finds "320 C".
+   */
+  search(query: string, limit?: number): PantoneEntry[];
 }
+
+const squash = (s: string) => s.replace(/^\s*pantone\s*/i, '').replace(/\s+/g, '').toUpperCase();
 
 export function createPantoneIndex(entries: readonly PantoneEntry[]): PantoneIndex {
   const valid = entries.filter((e) => normalizeHex(e.hex));
   const byCode = new Map<string, PantoneEntry>();
   for (const e of valid) byCode.set(normalizePantoneCode(e.code), e);
   const labIndex = createLabIndex(valid);
+  const searchable = valid.map((e, order) => ({
+    entry: e,
+    order,
+    squashed: squash(e.code),
+    words: e.code.toUpperCase().split(/\s+/),
+  }));
 
   return {
     size: valid.length,
@@ -58,6 +73,22 @@ export function createPantoneIndex(entries: readonly PantoneEntry[]): PantoneInd
       const m = labIndex.nearest(hex);
       if (!m) return null;
       return { code: m.item.code, hex: normalizeHex(m.item.hex)!, deltaE: m.deltaE, approximate: true };
+    },
+    search(query, limit = 8) {
+      const q = squash(query);
+      if (!q) return [];
+      const word = query.replace(/^\s*pantone\s*/i, '').trim().toUpperCase();
+      const ranked: { rank: number; order: number; entry: PantoneEntry }[] = [];
+      for (const s of searchable) {
+        let rank = -1;
+        if (s.squashed === q) rank = 0;
+        else if (s.squashed.startsWith(q)) rank = 1;
+        else if (word && s.words.some((w) => w.startsWith(word))) rank = 2;
+        else if (s.squashed.includes(q)) rank = 3;
+        if (rank >= 0) ranked.push({ rank, order: s.order, entry: s.entry });
+      }
+      ranked.sort((a, b) => a.rank - b.rank || a.order - b.order);
+      return ranked.slice(0, limit).map((r) => r.entry);
     },
   };
 }
